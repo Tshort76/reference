@@ -2,6 +2,11 @@
 ![image info](./images/Service_categories.png)
 *AWS service categories*
 
+## Regions and availability zones
+Regions are geographical areas that contain groups of availability zones, usually $2 \leq x \lt 6$.  An availability zone is a single data-center.  All availability zones in a region are geographically distinct but connected with low latency, high bandwidth network infrastructure.  A region name is typically of the form *ap-us-ohio-2*, which has the availability zone (2) embedded in the region name.
+
+Many AWS services are regional services but some, including IAM, are global.
+
 ## Compute Services
 EC2 - Ephemeral Storage (e.g. logs and generated files)
 EBS - Persistant Storage (e.g. logs and generated files)
@@ -19,7 +24,7 @@ You can provide a script to generate user data ... less sure about the usefulnes
 ### S3 - Secure Storage Services
 - 1 bucket per customer; does that ensure an adequate amount of seperation?
 
-3 levels of storage, based on desired access frequency.  Option to archive to the glacier tier.
+3 levels of storage according to the desired access frequency.  Option to archive to the glacier tier.
 
 Objects (file and meta) are automatically versioned.
 
