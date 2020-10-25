@@ -1,2 +1,2 @@
 # reference
-A collection of reference nptes/material for systems, software, processes, and techniques
+A collection of reference notes/material for systems, software, processes, and techniques
