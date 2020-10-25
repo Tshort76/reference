@@ -16,6 +16,45 @@ ElastiCache is a managed cache service that implemented either the Redis or Memc
 <!-- ![Elasticache](./images/elasticache.png | width=100) -->
 <img src="./images/elasticache.png" alt="Elasticache" width="50%">
 
+# Amazon S3
+S3 is conceptualized as a group of *buckets*, where each bucket contains *objects*.  S3 is a global service but buckets are linked to regions.
+## Buckets
+A bucket has the following properties:
+- globally unique name (mostly lowercase alphanumeric)
+- are defined at the region level
+- NO directories
+  - confusing since paths contain '/' characters, long names, and are treated as if folders in the UI
+
+## Objects
+An object is a file with a *key*, where the *key* is the full path to the object.  Each *key* consists of a prefix and an object name, where the object name is the last entry in the '/' delimited *key*.  For example, the following object URL `s3://my-bucket/my-folder/a-sub-folder/my-file.csv` can be partitioned into:
+- `s3://`: protocol
+- `my-bucket/`: bucket name + slash
+- `my-folder/a-sub-folder/my-file.csv`: object *key*
+- `my-folder/a-sub-folder/`: object prefix
+- `my-file.csv`: object name
+
+Objects are comprised of 4 components:
+- values: the content/data (5 TB limit)
+- metadata: key/value pairs that describe the data (added by system or user)
+- tags: key/value pairs (added by user)
+- version ID
+
+### Versioning
+When versioning is enabled, uploading multiple files to the same bucket with the same filename will duplicate the item but assign version #.  Only the latest version of an object is shown in the overview page.  Deleting a versioned file does NOT delete the file; instead, it adds a *delete* version of the file that hides the file in the overview screen.  This allows for recovering old versions of a file. If desired, you can delete specific versions of a file.
+
+### Encryption
+- SSE-S3: AWS handles all aspects of encryption and does it server-side
+- SSE-KMS: AWS handles encryption but provides keys and audit trail (allowing granular access)
+- SSE-C: Client provides encryption key, AWS uses (but doesn't store) key to encrypt objects
+
+## Security
+In addition to the standard user-based access (via IAM policies), S3 has resource (bucket) based policies which apply to particular buckets and allow cross account access.  An IAM principal can access an S3 object if:
+- the user IAM has permission or the resource policy allows access 
+- AND there is no explicit DENY policy
+
+## Static website hosting
+You can host a static webpage directly from a bucket by configuring a few things in the bucket properties tab and then ensuring that the bucket is accessible via policies.
+
 # Queues and Messages
 AWS offers a Simple Queue Service (SQS) for queues, Simple Notification Service (SNS) for the publish and subscribe pattern, and Kinesis for streaming.
 
