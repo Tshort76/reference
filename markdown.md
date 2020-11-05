@@ -1,8 +1,19 @@
-# Markdown Basics
+<div align="center">**Markdown**</div>
+===
 
-## <a name="emphasis-sec"></a> Emphasis
+## <a name="styling-sec"></a> Text Styling
 
-The *stated* mission: To go __boldly__ where _no one_ has **gone** before. Unfortunately, there are some issues at the bleeding edge, like when you need emphasize single characters __b__ c __d__ ... in these cases, use a soft hyphen and all will be well ... __b&#173;__ c __d&#173;__.
+**Sometimes it is best to be BOLD.**
+
+*Italics for Italians.* _Italics for the rest of us._
+
+~~You are silly ... nvm~~
+
+~~**What if something is really important gets crossed out?**~~
+
+_**I want to ~~apply~~ ALL of the styles.**_
+
+<div align="center"> I am a moderate, aligned in the center</div>
 
 ### Color
 
@@ -17,13 +28,29 @@ to achieve this goal.
 
 Use three asterisks for a horizontal line
 ***
+Use three hyphens for a heading like appearance
+---
 
-## To indent or not to indent 
+## Block Quotes
 
 > Of course, sometimes you will want to indent everything so as to create a block of text.
 Do not fear, that is easy to do as well
->
 
+
+### Nest those quotes
+> I am a chief executive, I oversee everything
+>> I am a vice president, I am very important
+>>> I am a manager, I am not that important
+>>>> I am a peon, hear me whine!
+
+## Code
+`EXPORT PATH=$PATH:\home\mine\couch\bin`
+
+```python
+# You can also have code blocks with syntax highlighting
+def identity(x):
+  return x
+```
 
 ## Lists
 
@@ -65,7 +92,7 @@ $P(X=x) = \left.
 
 ## Tables
 | Type | Notes |
-|-|-|
+|---|---|
 |df[val] | Select single column or sequence of columns; val can be boolean array, slice operator, bit mask DataFrame |
 |df.loc[val] | select row or subset of row by _label_|
 |df.loc[val1,val2] | select both rows and columns by _label_|
@@ -86,11 +113,11 @@ What is life without a homemade image of vector projection?  Note the hover hint
 ## Hyper links
 ### Internal links
 
-Did you forget how to add text emphasis in Markdown?  If so, the [emphasis section](#emphasis-sec) is just one click away.  You can add internal links for any header/section using its name, and replacing spaces and special characters with hyphens.  Want to see [indenting markdown](#To-indent-or-not-to-indent) ?
+Did you forget how to add text styling in Markdown?  If so, the [text styling](#styling-sec) is just one click away.  You can add internal links for any header/section using its name, and replacing spaces and special characters with hyphens.  Want to see [indenting markdown](#To-indent-or-not-to-indent) ?
 
 
 ### External links
-__[Click here to venture to the Wikipedia page on cats.](https://en.wikipedia.org/wiki/Cat)__
+[Click here to read about cats](https://en.wikipedia.org/wiki/Cat)
 
 
 # Markdown References

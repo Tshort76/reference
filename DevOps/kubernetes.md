@@ -30,7 +30,7 @@ Containers:
 # Resource Types
 ![Resource Hierarchy](images/k8_hierarchy.png)
 ## Pod
-A pod is the atomic unit of a k8s application.  Pods typically consist of a single container although they can also have multiple containers.  A pod can thus be thought of as a subnet (a pod of whales), where its constituent containers share an IP address, volumes, a network port range, and localhost (so intra-pod communication is via local host).
+A pod is the atomic unit of a k8s application.  Pods typically consist of a single container although they can also have multiple containers.  A pod can thus be thought of as a subnet (a pod of whales), where its constituent containers share an IP address, volumes, a network port range, and localhost (so intra-pod communication is via localhost).
 
 ```yaml
 apiVersion: v1
@@ -116,12 +116,19 @@ minikube stop
 ### kubectl
 https://kubernetes.io/docs/reference/kubectl/overview/
 
+#### Basic Commands
 ```
 kubectl apply -f <filename>
 kubectl get all|pods|events|nodes|replicasets|deployments|...
 kubectl describe <resource-type> <resource-name>
 kubectl config view
 ```
+#### Context switching
+```
+kubectl config current-context
+kubectl config use-context arn:aws:eks:us-west-2:768731332188:cluster/daas-nonprod-eks
+```
+
 
 # Sources
 - https://kubernetes.io/docs/home/

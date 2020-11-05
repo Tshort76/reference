@@ -1,3 +1,5 @@
+<div align="center">Datomic</div>
+===
 # Datalog
 ## Query Basics
 Copied nearly verbatim from [http://www.learndatalogtoday.org/chapter/1](http://www.learndatalogtoday.org/chapter/1) <br>
