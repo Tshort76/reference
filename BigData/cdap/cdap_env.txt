@@ -1,4 +1,0 @@
-CLEARDM_USERNAME=daastestuser1@clearwateranalytics.com
-CLEARDM_PASSWORD=Testing123!
-CLEARDM_BASEURL=https://cleardm.newproduct.cwan.cloud/
-CDAP_CLIENT_NAME=ASTER_PROXY
