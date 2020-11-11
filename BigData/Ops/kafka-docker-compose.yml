@@ -1,0 +1,10 @@
+---
+    version: '2'
+    
+    services:
+      broker:
+        image: apache-kafka/broker:2.5.0
+        hostname: kafka-broker
+        container_name: kafka-broker
+    
+    # ...rest omitted...
