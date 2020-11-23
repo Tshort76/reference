@@ -66,6 +66,18 @@ Your syntax for the __first__ list dictates the list type, the most convenient l
     - but hate to increment them
 - Hyphen lists work as well
 
+### Dictionary list with HTML
+<dl>
+  <dt>Google App Engine</dt>
+  <dd>*Serverless*, container-based compute platform (~ AWS Fargate)</dd>
+  <dt>Google Compute Engine</dt>
+  <dd>VM-based compute (~ AWS EC2)</dd>
+  <dt>Google Kubernetes Engine</dt>
+  <dd>Managed Kubernetes cluster (~ AWS EKS)</dd>
+  <dt>Google Cloud Functions</dt>
+  <dd>Serverless execution environment (~ AWS Lambda)</dd>
+</dl>
+
 
 ## Tex (math) markdown
 
