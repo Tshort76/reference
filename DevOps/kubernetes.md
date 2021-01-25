@@ -127,8 +127,15 @@ kubectl config view
 ```
 kubectl config current-context
 kubectl config use-context arn:aws:eks:us-west-2:768731332188:cluster/daas-nonprod-eks
+kubectl config use-context arn:aws:eks:us-west-2:768731332188:cluster/daas-prod-eks
 ```
 
+#### Port forwarding
+Assume that we have our dev Redis service running on a k8s cluster.  From our developer machine, we would like to access that running instance.  To accomplish this, we can use pod level port forwarding to forward from a port on our localhost to a port on the pod that is running Redis.
+
+`kubectl port-forward redis-master-765d459796-258hz 7000:6379`
+
+After running the above command, we are now able to treat `localhost:7000` as `redis-service-host:6379`, which gives us a lot of power.
 
 # Sources
 - https://kubernetes.io/docs/home/

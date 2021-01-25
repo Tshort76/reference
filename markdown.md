@@ -15,6 +15,8 @@ _**I want to ~~apply~~ ALL of the styles.**_
 
 <div align="center"> I am a moderate, aligned in the center</div>
 
+I use html to add a subscript<sub>1</sub>, a superscript<sup>2</sup>, and to make <sub><sup>small</sup></sub> text.
+
 ### Color
 
 You can color your text with any of the following colors, `blue|red|green|pink|yellow`, and markdown:
