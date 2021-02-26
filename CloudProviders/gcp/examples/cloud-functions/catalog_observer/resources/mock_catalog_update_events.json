@@ -1,0 +1,212 @@
+{
+    "new_file_event": {
+        "before":null,
+        "after":{
+           "storage_entry":{
+              "uri":"gs://clearstorage-us-d0e8058ae3d76dedcee88016054286dd/c8a1d12016d39fd544e0497401571e5e-2021-02-23/7d96fcbc-f1d1-48bd-b6e1-7c72b30c34be/valid_file.csv",
+              "_type":"clearstorage.bucket.fileset.v1",
+              "data_validation":{
+                 "status":"PENDING"
+              },
+              "object":"c8a1d12016d39fd544e0497401571e5e-2021-02-23/7d96fcbc-f1d1-48bd-b6e1-7c72b30c34be/valid_file.csv",
+              "bucket":"clearstorage-us-d0e8058ae3d76dedcee88016054286dd"
+           },
+           "schema_id":"637049c9-f68f-41b8-9651-95d1fd109289",
+           "id":"faab1a46-db4c-421d-89aa-3cb1f70341d3",
+           "tags":[
+              
+           ],
+           "series":"daas.demo.alpha.positions_file",
+           "provenance":{
+              "steward":{
+                 "service":"clearstorage.file_upload_processor",
+                 "version":"1.0"
+              }
+           },
+           "metadata":{
+              "file_size":"296027",
+              "user_email":"tester@daas.clearwateranalytics.com",
+              "_type":"clearstorage.user_upload.metadata",
+              "user_organization":"test",
+              "user_id":"test",
+              "uploaded_object_metadata":{
+                 "schema_id":"637049c9-f68f-41b8-9651-95d1fd109289",
+                 "filename":"valid_file.csv",
+                 "identity_platform":"unknown",
+                 "user_email":"tester@daas.clearwateranalytics.com",
+                 "file_id":"5548ecc8-a85f-4676-94d2-a1063ee2c60a",
+                 "organization":"test_org",
+                 "user_id":"test",
+                 "series":"daas.demo.alpha.positions_file"
+              }
+           },
+           "create_time":"2021-02-23T17:37:10.180Z",
+           "update_time":"2021-02-23T17:37:10.180Z"
+        }
+     }, 
+    "new_bq_table_event": {
+        "before": null,
+        "after": {
+            "schema_id": "4d57c41d-b51d-4c2d-986e-8c93cf42eeb7",
+            "tags": [],
+            "provenance": {
+                "steward": {
+                    "version": "1.0",
+                    "service": "clearstorage.file_upload_processor"
+                }
+            },
+            "storage_entry": {
+                "object": "00bc322bc4a48a6cc993e5d17390aa94-2021-02-04/291ad2eb-06b8-4d48-b5ca-b2dc611ec60f/positions.csv",
+                "data_validation": {
+                    "status": "PENDING"
+                },
+                "bucket": "clearstorage-us-d0e8058ae3d76dedcee88016054286dd",
+                "_type": "clearstorage.bigquery.table.v1"
+            },
+            "series": "daas.demo.alpha.positions_file",
+            "id": "74261f40-07bd-477f-85f9-71c92b7519b1",
+            "metadata": {
+                "_type": "clearstorage.bigquery.table.v1"
+            },
+            "create_time": "2021-02-04T19:39:28.489Z",
+            "update_time": "2021-02-04T19:39:28.489Z"
+        }
+    },
+    "invalid_file_event": {
+        "before": {
+            "provenance": {
+                "steward": {
+                    "version": "1.0",
+                    "service": "clearstorage.file_upload_processor"
+                }
+            },
+            "series": "daas.demo.alpha.positions_file",
+            "tags": [],
+            "schema_id": "4d57c41d-b51d-4c2d-986e-8c93cf42eeb7",
+            "storage_entry": {
+                "object": "fb485bebf9a2a35cd611daedf101d720-2021-02-08/8caae1db-fa56-4112-aac2-be5e5f5560dc/Std Positions.csv",
+                "_type": "clearstorage.bucket.fileset.v1",
+                "data_validation": {
+                    "status": "PENDING"
+                },
+                "bucket": "clearstorage-us-d0e8058ae3d76dedcee88016054286dd"
+            },
+            "metadata": {
+                "uploaded_object_metadata": {
+                    "filename": "Std Positions.csv",
+                    "user_id": "test",
+                    "file_id": "my_file_id_12345",
+                    "identity_platform": "unknown",
+                    "schema_id": "4d57c41d-b51d-4c2d-986e-8c93cf42eeb7",
+                    "series": "daas.demo.alpha.positions_file",
+                    "organization": "test"
+                },
+                "file_size": "4698",
+                "user_id": "test",
+                "_type": "clearstorage.user_upload.metadata"
+            },
+            "id": "069665ac-01c4-4e34-9acd-0eb10eb6cec5",
+            "create_time": "2021-02-08T19:08:29.584Z",
+            "update_time": "2021-02-08T19:08:29.584Z"
+        },
+        "after": {
+            "provenance": {
+                "steward": {
+                    "version": "1.0",
+                    "service": "clearstorage.file_upload_processor"
+                }
+            },
+            "series": "daas.demo.alpha.positions_file",
+            "tags": [],
+            "schema_id": "4d57c41d-b51d-4c2d-986e-8c93cf42eeb7",
+            "storage_entry": {
+                "object": "fb485bebf9a2a35cd611daedf101d720-2021-02-08/8caae1db-fa56-4112-aac2-be5e5f5560dc/Std Positions.csv",
+                "_type": "clearstorage.bucket.fileset.v1",
+                "data_validation": {
+                    "report_bucket": "artifacts.daas-sandbox-pwasden.appspot.com",
+                    "status": "INVALID",
+                    "report_object": "/example_data/validation_errors.json"
+                },
+                "bucket": "clearstorage-us-d0e8058ae3d76dedcee88016054286dd"
+            },
+            "metadata": {
+                "uploaded_object_metadata": {
+                    "filename": "Std Positions.csv",
+                    "user_id": "test",
+                    "file_id": "my_file_id_12345",
+                    "identity_platform": "unknown",
+                    "schema_id": "4d57c41d-b51d-4c2d-986e-8c93cf42eeb7",
+                    "series": "daas.demo.alpha.positions_file",
+                    "organization": "test"
+                },
+                "file_size": "4698",
+                "user_id": "test",
+                "_type": "clearstorage.user_upload.metadata"
+            },
+            "id": "069665ac-01c4-4e34-9acd-0eb10eb6cec5",
+            "create_time": "2021-02-08T19:08:29.584Z",
+            "update_time": "2021-02-08T19:08:29.584Z"
+        }
+    },
+    "valid_file_event": {
+        "before": {
+            "schema_id": "4d57c41d-b51d-4c2d-986e-8c93cf42eeb7",
+            "tags": [],
+            "provenance": {
+                "steward": {
+                    "version": "1.0",
+                    "service": "clearstorage.file_upload_processor"
+                }
+            },
+            "storage_entry": {
+                "object": "fb7568719874898fd809e8a3a6428a72-2021-02-05/334a702e-51a5-43bd-99b5-7b81c084368b/invalid_positions.csv",
+                "data_validation": {
+                    "status": "PENDING"
+                },
+                "bucket": "clearstorage-us-d0e8058ae3d76dedcee88016054286dd",
+                "_type": "clearstorage.bucket.fileset.v1"
+            },
+            "series": "daas.demo.alpha.positions_file",
+            "metadata": {
+                "_type": "clearstorage.bucket.fileset.v1.metadata"
+            },
+            "create_time": "2021-02-04T19:39:28.489Z",
+            "update_time": "2021-02-04T19:39:28.489Z"
+        },
+        "after": {
+            "provenance": {
+                "steward": {
+                    "service": "clearstorage.file_upload_processor",
+                    "version": "1.0"
+                }
+            },
+            "schema_id": "4d57c41d-b51d-4c2d-986e-8c93cf42eeb7",
+            "storage_entry": {
+                "data_validation": {
+                    "status": "VALID"
+                },
+                "bucket": "clearstorage-us-d0e8058ae3d76dedcee88016054286dd",
+                "_type": "clearstorage.bucket.fileset.v1",
+                "object": "fb7568719874898fd809e8a3a6428a72-2021-02-05/334a702e-51a5-43bd-99b5-7b81c084368b/invalid_positions.csv"
+            },
+            "series": "daas.demo.alpha.positions_file",
+            "metadata": {
+                "uploaded_object_metadata": {
+                    "filename": "Std Positions.csv",
+                    "user_id": "test_user",
+                    "file_id": "a_file_id_12345",
+                    "identity_platform": "unknown",
+                    "schema_id": "4d57c41d-b51d-4c2d-986e-8c93cf42eeb7",
+                    "series": "daas.demo.alpha.positions_file",
+                    "organization": "test_org"
+                },
+                "file_size": "4698",
+                "user_id": "test",
+                "_type": "clearstorage.user_upload.metadata"
+            },
+            "tags": [],
+            "create_time": "2021-02-05T17:34:00.149Z",
+            "update_time": "2021-02-05T18:07:46.493Z"
+        }
+    }
+}

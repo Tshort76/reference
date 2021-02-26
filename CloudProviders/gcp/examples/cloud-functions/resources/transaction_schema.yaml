@@ -1,0 +1,107 @@
+###########################
+# Here we specify only the properties portion of a JSON Schema.  The contents of this file 
+# are meant to be appended to the contents of the core_fields_defs.yaml file to form a complete
+# JSON schema, to be used with hypothesis-jsonschema.  This library does not support complex 
+# refs so we are taking this approach instead.
+###########################
+properties:
+  transaction:
+    title: daas/transaction
+    type: object
+    properties:
+      id:
+        type: string
+        description: UUID for this record.
+        format: ascii
+      group_id:
+        type: string
+        description: A client-provided grouping value.
+        format: ascii
+      creation_time:
+        type: string
+        description: Creation time of this record (ISO 8601)
+        format: date-time
+      account:
+        $ref: '#/definitions/account'
+      metadata:
+        type: object
+        description: Arbitrary metadata associated with this entity
+      is_cancel:
+        type: boolean
+        description: >-
+          Indiciates whether this transaction is a cancellation of a previous
+          transaction. Use source_transaction_identifier to identify which
+          transaction was canceled.
+      source_transaction_identifier:
+        type: string
+        description: The identifier for the transaction as provided by the data source
+        format: ascii
+      contract_id:
+        type: string
+        description: >-
+          Identifies the unique contract this entity belongs to. For multi-leg
+          instruments, all legs will share the same unique contract_id.
+        format: ascii
+      instrument:
+        $ref: '#/definitions/instrument'
+      counterparty:
+        allOf:
+          - $ref: '#/definitions/party'
+          - description: The counterparty of this transaction
+      executing_broker:
+        allOf:
+          - $ref: '#/definitions/party'
+          - description: The executing broker of this transaction
+      transaction_date:
+        type: string
+        description: The effective date of this transaction (ISO 8601)
+        format: date
+      settlement_date:
+        type: string
+        description: The settlement date of this transaction (ISO 8601)
+        format: date
+      long_short_indicator:
+        type: string
+        description: >-
+          Indicates whether this transaction is long or short. Use with
+          transaction_type to distinguish short sells, buy covers.
+        enum:
+          - LONG
+          - SHORT
+      transaction_type:
+        type: string
+        description: 'The type hierarchy of this transaction, represented as a label tree'
+        format: ascii
+      factor:
+        type: number
+        description: The factor of the instrument
+      transaction_value:
+        allOf:
+          - $ref: '#/definitions/fxmoney'
+          - description: The total value of the transaction
+      commission:
+        allOf:
+          - $ref: '#/definitions/fxmoney'
+          - description: The commission of the transaction
+      accrued:
+        allOf:
+          - $ref: '#/definitions/fxmoney'
+          - description: The accrued of the transaction
+      quantity:
+        type: number
+        description: The quantity of the instrument traded or transferred
+        format: int32
+      trade_price:
+        allOf:
+          - $ref: '#/definitions/fxmoney'
+          - description: The trade price of the transaction
+      notional:
+        allOf:
+          - $ref: '#/definitions/fxmoney'
+          - description: The notional value of the transaction
+      gross_market_value:
+        allOf:
+          - $ref: '#/definitions/fxmoney'
+          - description: >-
+              The market value of the transaction, gross of fees and other
+              expenses

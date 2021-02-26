@@ -1,0 +1,91 @@
+###########################
+# Here we specify only the properties portion of a JSON Schema.  The contents of this file 
+# are meant to be appended to the contents of the core_fields_defs.yaml file to form a complete
+# JSON schema, to be used with hypothesis-jsonschema.  This library does not support complex 
+# refs so we are taking this approach instead.
+###########################
+
+# $schema: "http://json-schema.org/draft-07/schema#"
+# type: object
+# definitions: core_fields_defs.yaml file
+properties:
+  position:
+    title: daas/position
+    type: object
+    required:
+      - id
+      - as_of_date
+      - creation_time
+      - quantity
+      - instrument
+    additionalProperties: false
+    properties:
+      id:
+        type: string
+        description: UUID for this record.
+        format: ascii
+      group_id:
+        type: string
+        description: A client-provided grouping value.
+        format: short_ascii
+      as_of_date:
+        type: string
+        description: The date when this position was effective (ISO 8601).
+        format: date
+      creation_time:
+        type: string
+        description: Creation time of this record (ISO 8601).
+        format: date-time
+      account:
+        $ref: '#/definitions/account'
+      metadata:
+        type: object
+        description: Arbitrary metadata associated with this entity
+      instrument:
+        $ref: '#/definitions/instrument'
+      contract_id:
+        type: string
+        description: >-
+          Identifies the unique contract this entity belongs to. For multi-leg
+          instruments, all legs will share the same unique contract_id.
+        format: ascii
+      settlement_type:
+        type: string
+        examples: 
+          - 'SETTLED'
+          - 'PAYABLE'
+          - 'POSTED'
+        description: >-
+          Indicates the settlement phase of the position, such as SETTLED,
+          PAYABLE, RECEIVABLE, POSTED
+        format: ascii
+      counterparty:
+        allOf:
+          - $ref: '#/definitions/party'
+          - description: The counterparty of this position
+      long_short_indicator:
+        type: string
+        description: Indicates whether this position is long or short
+        enum:
+          - LONG
+          - SHORT
+      accrued:
+        allOf:
+          - $ref: '#/definitions/fxmoney'
+          - description: Current accrued interest
+      market_price:
+        allOf:
+          - $ref: '#/definitions/fxmoney'
+          - description: Current market price
+      gross_market_value:
+        allOf:
+          - $ref: '#/definitions/fxmoney'
+          - description: 'Current market value, gross of fees or other expenses.'
+      quantity:
+        type: number
+        description: Current quantity
+        format: int32
+      notional:
+        allOf:
+          - $ref: '#/definitions/money'
+          - description: 'Current notional, when applicable'  

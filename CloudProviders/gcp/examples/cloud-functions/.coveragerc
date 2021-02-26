@@ -1,0 +1,10 @@
+[run]
+omit = 
+    */tests/*
+    .venv/*
+    */__init__.py
+    synthetic/*
+
+[report]
+exclude_lines =
+    ignore_in_test_coverage
