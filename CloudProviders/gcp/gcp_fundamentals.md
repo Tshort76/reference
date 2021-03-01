@@ -7,6 +7,7 @@
   - [Traditional](#traditional)
   - [Serverless](#serverless)
 - [Storage](#storage)
+- [Networking](#networking)
 - [Database services](#database-services)
 - [Data Analytics services](#data-analytics-services)
 - [AI and Machine Learning services](#ai-and-machine-learning-services)
@@ -34,6 +35,10 @@ Organizations and Folders only exist within a GSuite account.
   <dt>Google Kubernetes Engine</dt>
   <dd>Managed Kubernetes cluster (~ AWS EKS)</dd>
 </dl>
+<figure>
+  <img src="./images/gcp_compute.png" alt="GCP" width="50%">
+  <figcaption><sub><sup>Source (2)</sup></sub></figcaption>
+</figure>
 
 ## Serverless
 
@@ -43,7 +48,7 @@ Organizations and Folders only exist within a GSuite account.
 </figure>
 <dl>
   <dt>Google App Engine</dt>
-  <dd>*Serverless*, container-based compute platform (~ AWS Fargate)</dd>
+  <dd>Serverless, container-based compute platform (~ AWS Fargate)</dd>
   <dt>Google Cloud Functions</dt>
   <dd>Serverless, prebuilt execution environment (~ AWS Lambda)</dd>
   <dt>Cloud Run</dt>
@@ -59,6 +64,12 @@ Organizations and Folders only exist within a GSuite account.
   <dt>Google Cloud Filestore</dt>
   <dd>Managed NFS file system (~ AWS EFS) that allows legacy (file system based) software to run in the cloud</dd>
 </dl>
+
+# Networking
+<figure>
+  <img src="./images/gcp_networking.png" alt="GCP" width="50%">
+  <figcaption><sub><sup>Source (2)</sup></sub></figcaption>
+</figure>
 
 # Database services
 
