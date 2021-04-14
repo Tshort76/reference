@@ -134,8 +134,9 @@ Did you forget how to add text styling in Markdown?  If so, the [text styling](#
 [Click here to read about cats](https://en.wikipedia.org/wiki/Cat)
 
 
-# Markdown References
-
-- 'Markdown for Jupyter notebooks cheatsheet', Inge Halilovic. Feb 7, 2017.  https://medium.com/ibm-data-science-experience/markdown-for-jupyter-notebooks-cheatsheet-386c05aeebed
-- 'Markdown Cheatsheet', Adam Pritchard. May 29, 2017. https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
-- https://www.markdownguide.org/basic-syntax/
+# References
+<!-- Add citation inline with "a quote goes here" [[1]](#Inge). -->
+<a id="Inge">[1]</a> 
+*Markdown for Jupyter notebooks cheatsheet*, Inge Halilovic. Feb 7, 2017.  https://medium.com/ibm-data-science-experience/markdown-for-jupyter-notebooks-cheatsheet-386c05aeebed <br>
+<a id="Pritchard">[2]</a> 'Markdown Cheatsheet', Adam Pritchard. May 29, 2017. https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet <br>
+<a id="basics">[3]</a> https://www.markdownguide.org/basic-syntax/
