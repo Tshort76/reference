@@ -2,4 +2,4 @@
 *.code-workspace
 **/.DS_Store
 **/_*
-private
+private_reference
