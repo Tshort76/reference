@@ -119,22 +119,139 @@ Key problems that a Database must solve
 - Partially written records (database may crash)
 - Simultaneous users/Concurrency control (scale with # users and # records)
 
-## Iteratively more complex DB example
-### V0
+## Example System: Sequential File Write
 Imagine a simple database, which consists of get(k) and set(k,v).  The set command appends a key value pair to a file, and the get command fetches the latest record associated with a key.
-#### Strengths
+### Strengths
 - Fastest possible writes
 - Simple
-#### Weaknesses
+### Weaknesses
 - Extremely slow O(n) reads
 - No storage reclamation
 - Slow modification
 - Potential issues with simultaneous use
-### V1
-Create an in-memory hash index for records (key -> byte offset)
-Use a series of fixed length files instead of a single file
-#### Strengths
+## Example System: Hash Indexing (Log Structured Storage)
+Create an in-memory hash index for records (key -> byte offset) and segment files (fixed length) instead of a single file.  Keys are stored in chronological order, so that the most recent entry for a key is in the most recent file.
+### Strengths
 - Fast reads
-#### Weaknesses
+### Weaknesses
 - Slightly slower writes (need to update the index)
 - Limited scale since all keys must fit in memory
+## LSM Trees (SSTable)
+Take our log-structured storage segment, a sequence of key-value pairs appearing in the order that they were written, and *add a sorting requirement*: the sequence of key-value pairs is sorted by key.
+
+
+We can now make our storage engine work as follows:
+- When a write comes in, add it to an in-memory balanced tree data structure (e.g. a red-black tree). This in-memory tree is sometimes called a memtable.
+- When the memtable gets bigger than some threshold, write it out to disk as an SSTable file.
+  - While the SSTable is being written out to disk, writes can continue to a new memtable instance.
+- In order to serve a read request, first try to find the key in the memtable, then in
+the most recent on-disk segment, then in the next-older segment, etc
+- From time to time, run a merging and compaction process in the background to
+combine segment files and to discard overwritten or deleted values.
+  - Start reading the SSTable files in parallel, looking at the first key in each file, and copy the lowest key to the output file.  Repeat until all keys are copied over, taking only the most recent instance of a particular key
+  - 
+
+### Strengths
+- Scales to large datasets
+- Easy to perform range queries
+- High write throughput since writes are sequential
+- LSM-trees can be compressed better, and thus often produce smaller files on disk
+than B-trees.  Since LSM-trees are not page-oriented and periodically rewrite SSTables to remove fragmentation, they have lower storage overheads, espe‐
+cially when using leveled compaction
+- Typically lower write duplication/amplification (for each user write to DB, how many times does the system write that data)
+### Weaknesses
+- Looking up non-existent keys can be very slow
+  - A [bloom-filter](#bloom-filters) can be used to mitigate the costs
+- Compaction process can limit write throughput since it competes for write resources
+- In configuration is setup incorrectly for use case, databases can grow indefinitely as writes/modifications happen faster than compaction (and duplicate key removal)
+- Newer technology, so implementations are not as mature as B-Tree systems
+- Reads are typically slower on LSM-trees since they have to check several different data structures and SSTables at different stages of compaction.
+
+## B Trees
+Store keys using a B tree
+[Btree](../Computer_Science/resources/images/BTree.png)
+
+
+## Advanced Indexing structures
+### Storing values with index
+An index can be concieved of as a key/value pair.  In many instances, the key (e.g. index column) is stored with a pointer to the corresponding value (e.g. DB row), which is typically stored in a *heap file*.  This works very well for fixed size records, where values within records can change without changing the block size of that record.
+
+In some situations, the extra step to lookup values by heap file pointer is prohibitive and indexed values are stored alongside the index.  This type of index is known as a **clustered index**.  When only a subset of the record's fields are stored with the index, it is known as a **covering index** and queries that can be answered by using this index alone (without looking up additional values from the row) are said to be *covered*.
+
+### Multi-column indexes
+Queries that are a function of multiple attributes cannot always be made efficiently with independent, single key indices.  Additionally, simple solutions like concatenating fields into a single key can be of limited use (e.g. last_name + first_name can be used to query for full names or last names, but not first names).
+#### Geospatial Indices
+Geospatial indices require a search on 3 values (x,y,z) simultaneously, making traditional single key indices useless.  Some solutions to this problem are:
+- Use a [space-filling-curve](#space-filling-curve) to generate a single index value, then a traditional B-tree index
+- Use a specialized spatial index, like an [R-tree](#r-trees)
+
+### In memory databases
+In memory databases are more performant, when they are feasible for the domain dataset sizes, primarily because they avoid the overhead of encoding in-memory data structures to disk compatible forms.
+Examples:
+- VoltDB, MemSQL, and Oracle TimesTen are in-memory relational databases
+- RAMCloud is an open source, in-memory key-value store with durability 
+- Redis and Couchbase provide weak durability with asynchronous disk writes
+
+## Transaction vs Analytics (OLAP vs OLTP)
+Originally, databases were used to record single events (e.g. customer transactions) and retrieve those events at a later point in time, typically for display or audit purposes.  In this case, small groups of entire records are retrieved at any given time. This pattern of on-demand access (e.g show all my purchases for May 2022) is known as *online transaction processing* (**OLTP**).  Systems typically interact with the data in a transactional way.
+With faster computers and more extensive digital records, databases are increasingly subject to large analytic queries that help drive executive decisions (e.g. total sales by region and demographics).  Such queries require a very different access pattern, typically of the form of accessing a few fields across all records in a database.  This access pattern is known as *online analytic processing* (**OLAP**).  BI analysts typically interact with the data using the OLAP system.
+
+| Property             | Transactions (OLTP)                               | Analytics (OLAP)                          |
+| -------------------- | ------------------------------------------------- | ----------------------------------------- |
+| Main read pattern    | Small number of records per query, fetched by key | Aggregate over large number of records    |
+| Main write pattern   | Random-access, low-latency writes from user input | Bulk import (ETL) or event stream         |
+| Primarily used by    | End user/customer, via web application            | Internal analyst, for decision support    |
+| What data represents | Latest state of data (current point in time)      | History of events that happened over time |
+| Dataset size         | Gigabytes to terabytes                            | Terabytes to petabytes                    |
+
+---
+
+While relational databases can be used for both OLAP and OLTP, many companies use separate database systems for OLAP, termed **data warehouses**.
+
+## Data Warehouses
+An enterprise may have dozens of different transaction processing systems: systems
+powering the customer-facing website, controlling point of sale (checkout) systems in
+physical stores, tracking inventory in warehouses, planning routes for vehicles, man‐
+aging suppliers, administering employees, etc. Each of these systems is complex and has its own administrators, who are often not eager to let analysts run arbitrary queries across it during business hours.
+
+To support the OLAP paradigm, a read-only copy of the data (the warehouse) is created from all the various OLTP systems in the company.  The warehouse build process is an example of an ETL:
+- (E)xtract the data from OLTP systems, with some combination of periodic data dumps and continuously streamed updates
+- (T)ransform the data into an analysis-friendly schema
+- Clean the data with OLTP specific logic to remove or complete missing records
+- (L)oad the resulting data into the data warehouse.
+
+### Star and Snowflake Schemas
+Since the data warehouse is setup for arbitrary queries, its data is stored in a very generic format, a highly normalized relational table form.  The standard schema, in which *events* as stored as rows in a **fact** table, with individual columns containing atomic values (e.g. price or quantity) or foreign key references to complex values (**dimensions**, such as the `product purchased` or `location of sale`), is known as a **star** schema since it has a unifying/central concept (an event/fact) surrounded by a single layer of supporting dimension tables.  If the dimension tables themselves contain complex attributes (i.e. foreign key references to other tables), then the schema is known as a **snowflake** schema.
+
+![Star vs Snowflake](./images/star_vs_snowflake.jpg)
+
+### Column-oriented schemas
+Column oriented data storage is popular for data warehouses owing to the facts that:
+- Event tables typically have many columns, but only a few are used in any query
+- Column data is homogenous
+  - Each cell takes up the same space
+  - Typically redundancy, which lends itself to better compression
+Note that while an arbitrary scheme can be used for ordering rows, that scheme must be applied to all column stores such that element[i] of column[0] must correspond to the same fact/event as element[i] in column[b], $\forall b$.
+
+#### Column compression
+![bitmap compression](./images/columnar_compression.png)
+
+#### Sort Order
+If certain queries (e.g. group by date) are common, it might make sense to sort the rows by the relevant fields.  Since the data is stored in column format, this typically takes the form of:
+1. determine the correct row order by sorting the table containing the field of interest
+2. Modifying all other columns stores to use that same row order
+
+Note that have data sorted can help with compression, especially for the values that are sorted.  It might also help with other rows if feature values are similar in a local setting (e.g. Neighboring pixels in a 2D image are often very similar, so compression algorithms can exploit that).
+
+A clever way to allow multiple sort orders without extra duplication is to store replications of the data (which all DBs have already, for recovery) using a different sort order for each replica.
+
+### Data Cubes
+ TODO
+
+# Appendix
+## Bloom Filters
+For set membership testing
+## R-trees
+Special index for geospatial queries
+## Space filling curve
+Used to generate a single key value for geospatial data so that a traditional indexing structure (e.g. B-tree) can be used for queries
