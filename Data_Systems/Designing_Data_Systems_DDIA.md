@@ -1,3 +1,68 @@
+- [Design Principles and Goals](#design-principles-and-goals)
+  - [Reliability](#reliability)
+  - [Scalability](#scalability)
+  - [Maintainability](#maintainability)
+    - [Operability](#operability)
+    - [Simplicity](#simplicity)
+    - [Evolvability](#evolvability)
+- [The Data Model](#the-data-model)
+  - [Relational Data models](#relational-data-models)
+    - [Heuristics](#heuristics)
+  - [Document Data Models](#document-data-models)
+    - [Strengths](#strengths)
+    - [Weaknesses](#weaknesses)
+    - [Caveats](#caveats)
+  - [Graph Data Models](#graph-data-models)
+    - [Property graph model](#property-graph-model)
+    - [Triple stores](#triple-stores)
+  - [Summary](#summary)
+- [Storage and Retrieval](#storage-and-retrieval)
+  - [Example System: Sequential File Write](#example-system-sequential-file-write)
+    - [Strengths](#strengths-1)
+    - [Weaknesses](#weaknesses-1)
+  - [Example System: Hash Indexing (Log Structured Storage)](#example-system-hash-indexing-log-structured-storage)
+    - [Strengths](#strengths-2)
+    - [Weaknesses](#weaknesses-2)
+  - [LSM Trees (SSTable)](#lsm-trees-sstable)
+    - [Strengths](#strengths-3)
+    - [Weaknesses](#weaknesses-3)
+  - [B Trees](#b-trees)
+  - [Advanced Indexing structures](#advanced-indexing-structures)
+    - [Storing values with index](#storing-values-with-index)
+    - [Multi-column indexes](#multi-column-indexes)
+    - [In memory databases](#in-memory-databases)
+  - [Transaction vs Analytics (OLAP vs OLTP)](#transaction-vs-analytics-olap-vs-oltp)
+  - [Data Warehouses](#data-warehouses)
+    - [Star and Snowflake Schemas](#star-and-snowflake-schemas)
+    - [Column-oriented schemas](#column-oriented-schemas)
+    - [Aggregated Views (Data Cubes)](#aggregated-views-data-cubes)
+  - [Summary](#summary-1)
+- [Encoding and Evolution](#encoding-and-evolution)
+  - [Background and Terms](#background-and-terms)
+  - [JSON, XML, CSV](#json-xml-csv)
+    - [Binary variants](#binary-variants)
+  - [DataFlow and evolvability](#dataflow-and-evolvability)
+    - [DataFlow via Databases](#dataflow-via-databases)
+    - [Dataflow via APIs](#dataflow-via-apis)
+    - [Message passing dataflow](#message-passing-dataflow)
+  - [Summary](#summary-2)
+- [Replication](#replication)
+  - [Leader Follower Model](#leader-follower-model)
+    - [Full synchronization](#full-synchronization)
+    - [Semi-synchronous configuration](#semi-synchronous-configuration)
+    - [Fully Asynchronous configuration](#fully-asynchronous-configuration)
+    - [Node Failure Recovery](#node-failure-recovery)
+  - [Replication Logs](#replication-logs)
+    - [Statement replication](#statement-replication)
+    - [Write-ahead log (WAL) shipping](#write-ahead-log-wal-shipping)
+    - [Logical (row-based) log replication](#logical-row-based-log-replication)
+    - [Triggered replication](#triggered-replication)
+  - [Eventual Consistency (Replication Lag)](#eventual-consistency-replication-lag)
+- [Appendix](#appendix)
+  - [Bloom Filters](#bloom-filters)
+  - [R-trees](#r-trees)
+  - [Space filling curve](#space-filling-curve)
+
 
 # Design Principles and Goals
 ## Reliability
@@ -245,8 +310,153 @@ Note that have data sorted can help with compression, especially for the values 
 
 A clever way to allow multiple sort orders without extra duplication is to store replications of the data (which all DBs have already, for recovery) using a different sort order for each replica.
 
-### Data Cubes
- TODO
+### Aggregated Views (Data Cubes)
+It is common for certain aggregates to be used frequently across an organization, making it reasonable to cache (a.k.a materialize) the aggregated data.  A popular cache format is the **data cube**, which is a grid of aggregates grouped by different dimensions.
+
+![2D Data Cube](./images/2d_data_cube.png)
+
+The above table is a view of a data cube, where there are 2 dimensions at play and each cell contains the aggregate (e.g., SUM) of an attribute (e.g., net_price) of all facts with that date-product combination. Things are harder to visualize with more dimensions, but in general each cell contains the value of interest for a particular combination of dimensions (e.g. date,product, store, customer) and the cell values can then repeatedly be summarized along each of the dimensions.
+
+## Summary
+On a high level, we saw that storage engines fall into two broad categories: those optimized for transaction processing (OLTP), and those optimized for analytics (OLAP).
+
+There are big differences between the access patterns in those use cases:
+- OLTP systems are typically user-facing, which means that they may see a huge volume of requests. In order to handle the load, applications usually only touch a small number of records in each query. The application requests records using
+some kind of key, and the storage engine uses an index to find the data for the requested key. Disk seek time is often the bottleneck here.
+- OLAP systems such as data warehouses are primarily used by business analysts. They handle a much lower volume of queries than OLTP systems, but each query is typically very demanding, requiring many millions of records to be scanned in a short time. Disk bandwidth (not seek time) is often the bottleneck here, and column-oriented storage is an increasingly popular solution for this kind of workload.
+
+On the OLTP side, we saw storage engines from two main schools of thought:
+- The log-structured school, which only permits appending to files and deleting obsolete files, but never updates a file that has been written. Bitcask, SSTables, LSM-trees, LevelDB, Cassandra, HBase, Lucene, and others belong to this group.
+- The update-in-place school, which treats the disk as a set of fixed-size pages that can be overwritten. B-trees are the biggest example of this philosophy, being used in all major relational databases and also many nonrelational ones.
+
+Log-structured storage engines are a comparatively recent development. Their key idea is that they systematically turn random-access writes into sequential writes on disk, which enables higher write throughput due to the performance characteristics of hard drives and SSDs.
+
+Importantly, when your queries require sequentially scanning across a large number of rows, indexes are much less relevant. Instead it becomes important to encode data very compactly, to minimize the amount of data
+that the query needs to read from disk, and column-oriented storage can help achieve this goal.
+
+# Encoding and Evolution
+## Background and Terms
+- *Backward compatibility*: Newer code can read data that was written by older code.
+- *Forward compatibility*: Older code can read data that was written by newer code.
+
+Programs usually work with data in (at least) two different representations:
+1. In memory, data is kept in objects, structs, lists, arrays, hash tables, trees, and so on. These data structures are optimized for efficient access and manipulation by the CPU (typically using pointers).
+2. When you want to write data to a file or send it over the network, you have to encode it as some kind of self-contained sequence of bytes (for example, a JSON document). Since a pointer wouldn’t make sense to any other process, this sequence-of-bytes representation looks quite different from the data structures that are normally used in memory.
+
+## JSON, XML, CSV
+JSON and XML are the main lowest common denominator encoding language for data transfer across organizations.  JSON is newer and better in most circumstances, but XML continues to be used in new systems built by old developers.  CSV is also useful as a compact, human-readable representation of tabular data.  All of these systems have optional schema support, although XML's is used more often than any JSON variant.
+
+### Binary variants
+JSON and XML are both verbose, encoding the field names within each record.  While this makes them human-readable, it also drastically increases the disk size of the data and makes schema changes (e.g. renaming a field) onerous.  To deal with that, many binary encoding libraries have been developed.
+
+Apache Thrift and Protocol Buffers are binary encoding systems that require a schema for any data that is encoded, and each come with a code generation tool that takes a schema and produces classes that implement the schema in various programming languages.
+
+```
+struct Person {  
+  1: required string userName,  
+  2: optional i64 favoriteNumber,  
+  3: optional list<string> interests 
+}
+```
+
+Note that the encoded data contains field tags (i.e. 1, 2, and 3 above), which are stored in the individual documents/records instead of field names (to reduce size and ease certain update operations).
+
+## DataFlow and evolvability
+### DataFlow via Databases
+- Large variance in record age: could have data that is 5 milliseconds old AND data that is 5 years old
+- Often large lag between consumption (read) and production (write)
+- Data outlives code
+- Schema upgrades are often limited to column renaming and new columns with NULL defaults
+- Generic and flexible queries
+
+### Dataflow via APIs
+- APIs limits queries to a predefined set of operations and parameters
+- Requests for data can timeout or fail, even when the requested data exists
+- Data exists outside of a single memory store, so it must be encoded/decoded accordingly
+- Network latency
+- Consumers and Producers might be different organizations
+
+### Message passing dataflow
+- Asynchronous
+- It can act as a buffer if the recipient is unavailable or overloaded, and thus improve system reliability.
+- It avoids the sender needing to know the IP address and port number of therecipient
+- It allows one message to be sent to several recipients.
+- It logically decouples the sender from the recipient (publish and forget)
+
+## Summary
+- Encodings
+  - Programming language–specific encodings are restricted to a single programming language and often fail to provide forward and backward compatibility.
+  - Textual formats like JSON, XML, and CSV are widespread, have optional schema languages, and are useful for data transfer across organizations.
+  - Binary schema–driven formats like Thrift, Protocol Buffers, and Avro allow compact, efficient encoding with clearly defined forward and backward compatibility semantics. The schemas can be useful for documentation and code generation in statically typed languages. However, they have the downside that data needs to be decoded before it is human-readable.
+- Dataflows
+  - Databases, where the process writing to the database encodes the data and the process reading from the database decodes it
+  - RPC and REST APIs, where the client encodes a request, the server decodes the request and encodes a response, and the client finally decodes the response
+  - Asynchronous message passing (using message brokers or actors), where nodes communicate by sending each other messages that are encoded by the senderband decoded by the recipient
+
+# Replication
+Replication means keeping a copy of the same data on multiple machines that are
+connected via a network. Reasons for this include:
+- To keep data geographically close to your users (and thus reduce latency)
+- To allow the system to continue working even if some of its parts have failed
+(and thus increase availability)
+- To scale out the number of machines that can serve read queries (and thus
+increase read throughput)
+## Leader Follower Model
+All *WRITE* requests go through a leader node, which updates its data store before notifying replicas of the new changes (synchronously and/or asynchronously).  *READ* requests can be sent to any node.
+### Full synchronization
+Leader node sends update message/log to all replicas and waits for a confirmation before proceeding.
+- (-) If a single replica fails, the entire database is locked
+- (+) All nodes are relatively fresh
+- (-) Serious lag can occur for geographically distributed replicas
+- (+) Easier disaster recovery if the leader node goes down
+
+### Semi-synchronous configuration
+The leader node sends updates synchronously to a few (but not all) replicas and asyncronously to the rest.
+- (+) If a single replica fails, the entire database is NOT locked
+- (-) Some nodes can lag behind (delayed consistency)
+- (-) Serious lag can occur for geographically distributed replicas
+- (+) Easier disaster recovery if the leader node goes down
+
+### Fully Asynchronous configuration
+The leader node sends updates asynchronously to all replicas
+- (++) Fastest writes, since no blocking for slow replica processing
+- (--) Can lose writes if leader dies before replicas get updates
+
+### Node Failure Recovery
+If a read replica fails, recovery is fairly straightforward.  All data is read from fellow replicas, until the node is caught up and can start reading from the standard write log.
+If the write replica fails, recovery is quite complicated.  The following must occur:
+1. Determine that the leader has failed
+   1. Choosing a timeout must balance recovery time, lost writes, and the risk of false positives
+2. Choose a new leader
+3. Reconfigure the system to use the new leader
+
+## Replication Logs
+### Statement replication
+Store a log of the actual write requests, such that all replicas can execute the same statements and stay in sync
+- (+) Easy to implement
+- (--) nondeterministic functions, such as NOW(), are likely to generate a different value on each replica
+- Autoincrementing columns (ids) or `where` conditions can produce different results if databases have different contents
+- non-deterministic side effects can produce different results on different machines
+
+While it is possible to cope with these issues, there are so many edge cases that other replication methods are generally preferred.
+
+### Write-ahead log (WAL) shipping
+If SSTables or LSM-Trees are used for storage, then the latest log file can simply be shipped to failed nodes to aid recovery.
+- (+) Easy to implement if disk storage uses one of these formats
+- (-) Data format and replication are tightly coupled, limiting version updates
+
+### Logical (row-based) log replication
+A log of logical changes to records, typically at the granularity of rows.
+- (+) replication logic is decoupled from storage engine
+- (+) replication log easier to parse by external applications
+- (-) requires a new data model and corresponding application logic
+
+### Triggered replication
+A developer would register custom application code to be automatically executed when a data change (write transaction) occurs in a database system.
+- (+) flexibility of application code
+- (-) Requires custom implementations, so prone to bugs and expensive
+
+## Eventual Consistency (Replication Lag)
 
 # Appendix
 ## Bloom Filters

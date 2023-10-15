@@ -1,5 +1,6 @@
 # Logging
-[Offical Documentation](https://docs.python.org/3/howto/logging.html) <br>
+[Offical Documentation](https://docs.python.org/3/howto/logging.html)
+
 The logging library takes a modular approach and offers several categories of components: loggers, handlers, filters, and formatters.  It is easiest to envision this setup in terms of a unilateral message publishing system
 
 <dl>
@@ -59,6 +60,11 @@ version: 1
 formatters:
   basic:
     format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    datefmt: "%H:%M:%S"
+  json: 
+    format: "%(asctime)s %(name)s %(levelname)s %(message)s"
+    datefmt: "%Y-%m-%dT%H:%M:%SZ"
+    class: "pythonjsonlogger.jsonlogger.JsonFormatter"
 handlers:
   console:
     class: logging.StreamHandler
@@ -69,7 +75,7 @@ handlers:
     when: W0
     interval: 7
     backupCount: 1
-    formatter: basic
+    formatter: json   # write json entries for easier automated log parsing tool consumption
     filename: "logs/app.log"
 loggers:
   prima.ui.heart_tagging.ui_model:  # configure logger associated with a module
@@ -129,3 +135,8 @@ Dash is running on http://127.0.0.1:8051/
 2023-09-11 12:07:56,563 - prima.ui.heart_tagging.ui_model - INFO - Info
 2023-09-11 12:07:56,563 - prima.ui.heart_tagging.ui_model - WARNING - Warn
 ```
+
+## Resources
+- [Best Practices](https://betterstack.com/community/guides/logging/python/python-logging-best-practices/)
+- [Configuration Format](https://docs.python.org/3/library/logging.config.html#module-logging.config)
+- [Offical Logging Documentation](https://docs.python.org/3/howto/logging.html)
