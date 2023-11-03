@@ -57,7 +57,11 @@
     - [Write-ahead log (WAL) shipping](#write-ahead-log-wal-shipping)
     - [Logical (row-based) log replication](#logical-row-based-log-replication)
     - [Triggered replication](#triggered-replication)
-  - [Eventual Consistency (Replication Lag)](#eventual-consistency-replication-lag)
+  - [Replication Lag](#replication-lag)
+    - [Eventual Consistency](#eventual-consistency)
+    - [Read what you write](#read-what-you-write)
+    - [Monotonic Reads](#monotonic-reads)
+    - [Consistent prefix](#consistent-prefix)
 - [Appendix](#appendix)
   - [Bloom Filters](#bloom-filters)
   - [R-trees](#r-trees)
@@ -456,7 +460,17 @@ A developer would register custom application code to be automatically executed 
 - (+) flexibility of application code
 - (-) Requires custom implementations, so prone to bugs and expensive
 
-## Eventual Consistency (Replication Lag)
+## Replication Lag
+Updates must be propagated out to replicas, so unless locking is used there will always be a non-zero amount of time where one replica (i.e. the master) has more recent data than another (i.e. a read-only node halfway around the world), since latency cannot be avoided.  Different systems make different guarantees regarding what the user can expect after making an update to the system.
+### Eventual Consistency
+An inconsistency is merely temporary and if you stop writing to the database and wait a while, the followers will eventually catch up and become consistent with the leader.
+### Read what you write
+If user updates their favorite book to 'Emma', updating their page should show this update, even if the update won't necessarily appear in her friend's profiles for some time.
+### Monotonic Reads
+After seeing user state corresponding to update T, the user should never see state corresponding to any state that existed prior to update T.
+### Consistent prefix
+If a sequence of writes happens in a certain order, then anyone reading those writes will see them appear in the same order.
+
 
 # Appendix
 ## Bloom Filters

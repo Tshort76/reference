@@ -14,7 +14,7 @@ The logging library takes a modular approach and offers several categories of co
   <dd>Specify the layout of log messages</dd>
 </dl>
 
-![Logging Flow chart](images/logging_flow.png)
+![Logging Flow chart](resources/images/logging_flow.png)
 
 ## Loggers
 Logger objects have a threefold job:
