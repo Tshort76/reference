@@ -12,7 +12,7 @@ The cost function does not need to be convex in order
 
 Batch size should be $\leq 2*k$, where k is the number of categories for your classifier.
 
-### TnT
+### Tips and Tricks
 - Use ReLu
 - Initialize the weights intelligently
 - Use cross-entropy loss for classification
@@ -26,7 +26,7 @@ Batch size should be $\leq 2*k$, where k is the number of categories for your cl
 
 
 ## Representation Learning
-![2LayerANN for linear separation](../resources/images/ANN_fn_approximator.png)
+![2LayerANN for linear separation](../../resources/images/ANN_fn_approximator.png)
 
 TODO - kind of want to do some additional research here, this idea that was mentioned was that a simple neural network could be used to transform a dataset into one that could be linearly seperable, which is to say that it could be an effective method for automatic feature extraction/enrichment.
 
@@ -34,10 +34,18 @@ A network with a single hidden layer can approximate any function, provided that
 
 The intuition behind why having N hidden layers might reduce network size is owing to the compositionality of many of the domains in which we are interested.  Natural language consists of phenomes, words, clauses, sentences, ...  As such, earlier layers in a feedforward network can learn to transform input into the more basic elements, with subsequent layers learning only how to deal with more abstract constructions, like clauses.
 
-# Activation and Cost functions
-![Activation Functions](../resources/images/activation_functions.ppm)<br>
+### ANNs as Rotating and Squashing
+A simple neural network follows the pattern:
 
-## Vanishing Gradient
+$\vec{x} \rightarrow \boxplus \rightarrow \diagup \rightarrow \boxplus \rightarrow \diagup \dots \vec{y}$
+, where $\boxplus$ is a linear transformation (i.e. space rotation, shear, reflection, scale) and $\diagup$ is a non-linear transformation (i.e. ReLu or Tanh).
+
+The intuition behind this is that internal nodes of the model are learning how to transform the input vector space from a high density cloud in N-dimensional space to a larger set of isolated high density clouds (ideally, each cloud contains all instances of a single class, with one cloud per class, and clouds are linearly seperable) in D-dimensional space, where $D \gt N$ will typically be the case.  A standard linear classifier is then applied to this distorted space.
+
+# Activation and Cost functions
+![Activation Functions](../../resources/images/activation_functions.ppm)<br>
+
+## Problem of the Vanishing Gradient
 $Tanh$ and $sigmoid$ are virtually identical and are useful as smooth, continuous, differentiable squashing functions.  However, the very fact that they squash the output is a huge issue with deeper neural networks, where this behavior compounds across layers and leads to what is known as a *vanishing gradient*.
 
 Imagine a 5 layer network with 5 nodes (1 node per layer to make a simple line).  Compounding the $tanh$ operation for a prediction error of 100 yields the sequence [100, 1, 0.76, 0.64, 0.57], so the error signal (the gradient) is tiny after the fourth layer even though a single node accounts for all the error at each layer. For this reason, ReLu and its variants are the popular choice for deeper networks, since they do not squash the error signal.
@@ -56,14 +64,7 @@ TODO need more info on intuition behind cross entropy loss
 # Architectures
 Mixture of experts with an attention module as the switch which controls which system gets used.
 Important to know that the switch component is trained as part of training the system.
-![Attention switch](../resources/images/attention_module.png)
+![Attention switch](../../resources/images/attention_module.png)
 
-# ANNs as Rotating and Squashing
-A simple neural network follows the pattern:
+## Recurrent and Convolutional Networks
 
-$\vec{x} \rightarrow \boxplus \rightarrow \diagup \rightarrow \boxplus \rightarrow \diagup \dots \vec{y}$
-, where $\boxplus$ is a linear transformation (i.e. space rotation, shear, reflection, scale) and $\diagup$ is a non-linear transformation (i.e. ReLu or Tanh).
-
-The intuition behind this is that internal nodes of the model are learning how to transform the input vector space from a high density cloud in N-dimensional space to a larger set of isolated high density clouds (ideally, each cloud contains all instances of a single class, with one cloud per class, and clouds are linearly seperable) in D-dimensional space, where $D \gt N$ will typically be the case.
-
-# Tools, classification with neural networks, PyTorch

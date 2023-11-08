@@ -6,6 +6,6 @@ scikit-learn
 scipy
 toolz
 plotly
-ipywidgets
-mplcursors
-plotly
+torch
+torchvision
+torchaudio

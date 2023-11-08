@@ -5,15 +5,14 @@ Span as the set of all points that can be represented as the linear combination 
 
 Think of a linear transformation of a span  You can describe it in terms of an operation that you could perform on any vector in the span in order to transform it to its new coordinate.  ...pull from video...
 
-For a transformation in 2D space, we can define a transform as the set of points that our unit vectors become after the transformation.
+For a transformation in 2D space, we can define a **transformation as the set of vectors that our basis unit vectors are mapped to in the transformation**, such that the $i^{th}$ column of the transformation (matrix) represents the new coordinate for $i^{th}$ unit basis ($i^{th}$ unit basis is all zeros with a 1 in the $i^{th}$ location, 1-indexed).
 
-(0,1) -> (2,1)  and (1,0) -> (-1,0) elegantly represents a transformation, and is often written in the (matrix) form: 
-
+So the matrix
 $$\begin{bmatrix}
     2  & -1 \\
     1  & 0 \\
 \end{bmatrix}$$
-Note that column[i] represents the new coordinate for unit_vec[i]!
+can be interpreted as rotating and stretching the unit vector $i=\begin{bmatrix}1 \\0 \end{bmatrix} \rightarrow \begin{bmatrix}2 \\1 \end{bmatrix}$ and the unit vector $j=\begin{bmatrix}0 \\1 \end{bmatrix} \rightarrow \begin{bmatrix}-1 \\0 \end{bmatrix}$.
 
 ## Determinant
 Can think of things as ways to SCALE our unit vectors
