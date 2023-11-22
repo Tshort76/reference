@@ -49,7 +49,6 @@ Consumers read data from a topic's partitions, where there is no ordering betwee
 Consumers read in groups, where each consumer in the group reads from a mutually exclusive set of partitions.
 
 
-
 # TODO 
 - Kafka Streams
 - Kafka Connect

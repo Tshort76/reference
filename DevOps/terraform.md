@@ -5,25 +5,23 @@
     - [Init](#init)
     - [Destroy](#destroy)
   - [Syntax](#syntax)
-      - [Provider](#provider)
-      - [Resource](#resource)
-      - [Resource attribute reference](#resource-attribute-reference)
   - [Variables](#variables)
     - [Input variables](#input-variables)
     - [Setting input variables](#setting-input-variables)
     - [Referencing input variables](#referencing-input-variables)
-      - [EOF](#eof)
   - [Progressive Example](#progressive-example)
     - [Create a basic EC2 instance](#create-a-basic-ec2-instance)
     - [Name the instance](#name-the-instance)
     - [Deploy a webserver to the instance](#deploy-a-webserver-to-the-instance)
 - [Terraform state management](#terraform-state-management)
   - [State isolation](#state-isolation)
-  - [Terraform_remote_state Data Source](#terraform_remote_state-data-source)
+  - [Terraform\_remote\_state Data Source](#terraform_remote_state-data-source)
 - [Modules](#modules)
   - [Module Definition](#module-definition)
   - [Module Usage](#module-usage)
   - [References](#references)
+
+
 ## Overview
 
 <dl>
