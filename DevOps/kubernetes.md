@@ -97,6 +97,7 @@ Creates a virtual IP inside the cluster to enable communication between differen
 
 # Configuration files
 All k8s configuration is done via YAML files.  At a minimum, each k8s config file must contain the following (4) properties:
+
 ```yaml
 apiVersion: <v1,app/v1>
 kind: <resource-type>
