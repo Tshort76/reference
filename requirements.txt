@@ -1,11 +1,13 @@
-pandas
+ipykernel
 numpy
+pandas
+requests
+toolz
 matplotlib
 seaborn
 scikit-learn
 scipy
 toolz
 plotly
-torch
-torchvision
-torchaudio
+pyyaml
+json
