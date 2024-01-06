@@ -1,5 +1,6 @@
 import sqlite3 as sql
 from pathlib import Path
+import pandas as pd
 
 
 def initialize_database(database_file, sql_paths: list[Path]):
@@ -21,15 +22,19 @@ def initialize_database(database_file, sql_paths: list[Path]):
     connection.close()
 
 
-def query(qstr: str, conn: sql.Connection = None, db_path: Path = None) -> list:
+def query(qstr: str, conn: sql.Connection = None, db_path: Path = None, as_dataframe: bool = True) -> list:
     q = qstr.strip()
     if conn is not None:
+        if as_dataframe:
+            return pd.read_sql_query(q, conn)
         cur = conn.cursor()
         r = cur.execute(q)
         return r.fetchall()
 
     if db_path is not None:
         with sql.connect(db_path) as conn:
+            if as_dataframe:
+                return pd.read_sql_query(q, conn)
             cur = conn.cursor()
             r = cur.execute(q)
             return r.fetchall()
