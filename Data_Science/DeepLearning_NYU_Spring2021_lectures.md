@@ -157,6 +157,13 @@ Generator - maps a random/noise vector to the domain of interest (e.g. 2D images
 Training - rotate between training the generator with a fixed discriminator network and training the discriminator with a fixed generator network
 - GANs have been found to be useless for representation learning
 
+# Differentiable Associative Memories
+A transformer is basically a differentiable hash table.
+
+Gated Expert Systems - Train a bunch of models, then train a gating system to learn which model's output to use for different inputs (e.g. gate might learn to use model A for 4 legged animals, B for birds, etc).  The gate could also learn weights and produce a weighted sum of model outputs.
+
+Softmax - Create probability density function for discrete category set
+
 # Sources
 1. [NYU Deep Learning SP21](https://cds.nyu.edu/deep-learning/)
 2. [Essense of Linear Algebra](https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&pp=iAQB)

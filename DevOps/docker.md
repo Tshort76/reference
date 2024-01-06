@@ -99,7 +99,6 @@ CMD ["python", "./app.py"]
 ```
 
 # Multi-container environments
-TODO 
 https://docker-curriculum.com/#multi-container-environments
 
 # Sources
