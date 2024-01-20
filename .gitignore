@@ -5,3 +5,5 @@
 private_reference
 .venv
 **/*.db
+.lsp
+.clj-kondo

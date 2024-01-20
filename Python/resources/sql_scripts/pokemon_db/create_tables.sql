@@ -104,12 +104,12 @@ CREATE TABLE `trainers` (
 
 CREATE TABLE `base_stats` (
   `pok_id` int(11) NOT NULL,
-  `b_hp` int(11) DEFAULT NULL,
-  `b_atk` int(11) DEFAULT NULL,
-  `b_def` int(11) DEFAULT NULL,
-  `b_sp_atk` int(11) DEFAULT NULL,
-  `b_sp_def` int(11) DEFAULT NULL,
-  `b_speed` int(11) DEFAULT NULL,
+  `hp` int(11) DEFAULT NULL,
+  `attack` int(11) DEFAULT NULL,
+  `defense` int(11) DEFAULT NULL,
+  `spatk` int(11) DEFAULT NULL,
+  `spdef` int(11) DEFAULT NULL,
+  `speed` int(11) DEFAULT NULL,
   PRIMARY KEY (`pok_id`)
 );
 
@@ -117,4 +117,11 @@ CREATE TABLE `abilities` (
   `id` int(11) NOT NULL,
   `name` varchar(79) NOT NULL,
   PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `natures` (
+  `name` varchar(12) NOT NULL,
+  `increases` varchar(12) NOT NULL,
+  `decreases` varchar(12) NOT NULL, 
+  PRIMARY KEY (`name`)
 );

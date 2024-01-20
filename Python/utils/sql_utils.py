@@ -1,6 +1,7 @@
 import sqlite3 as sql
 from pathlib import Path
 import pandas as pd
+from IPython.display import display
 
 
 def initialize_database(database_file, sql_paths: list[Path]):
@@ -40,31 +41,21 @@ def query(qstr: str, conn: sql.Connection = None, db_path: Path = None, as_dataf
             return r.fetchall()
 
 
-def list_table_schemas(database_file: str):
+def list_table_schemas(database_file: str) -> None:
     # Connect to SQLite database
     with sql.connect(database_file) as conn:
         cursor = conn.cursor()
 
         # Query to retrieve table names and their schema
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        table_names = cursor.fetchall()
+        table_names = [t[0] for t in cursor.fetchall()]
 
         # Iterate through tables and print their schema
-        for table in table_names:
-            table_name = table[0]
-            print(f"Table: {table_name}")
-
+        for table_name in table_names:
             # Query to retrieve the schema of each table
             cursor.execute(f"PRAGMA table_info({table_name});")
             schema_info = cursor.fetchall()
-
-            # Print the schema information
-            for column in schema_info:
-                column_name = column[1]
-                column_type = column[2]
-                print(f"  {column_name}: {column_type}")
-
-            print("\n")
+            display(pd.DataFrame([{r[1]: r[2] for r in schema_info}], index=[table_name]))
 
 
 # region binary split insertion for tricky records
