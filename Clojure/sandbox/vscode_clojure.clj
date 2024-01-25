@@ -1,6 +1,6 @@
 ;;;; namespaces
 ;; Load namespace and requirements - Ctrl+Alt+C Enter
-
+(ns vscode-clojure)
 
 
 

@@ -1,0 +1,7 @@
+{:paths ["src"]
+ :deps {;; environ/environ {:mvn/version "1.2.0"}
+        ;; com.taoensso/timbre {:mvn/version "4.10.0"}
+        }
+ :aliases
+ {:test {:extra-paths ["test"]
+         :extra-deps {org.clojure/test.check {:mvn/version "1.0.0"}}}}}

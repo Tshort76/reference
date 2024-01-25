@@ -3,8 +3,6 @@
             [compojure.route :as route]
             [clojure.data.json :as json]))
 
-(def app-state (atom []))
-
 (defn std-resp [{:strs [action parameters]}]
   {:status 200
    :body (json/write-str
