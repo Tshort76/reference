@@ -1,4 +1,4 @@
-(ns sandbox.app
+(ns sandbox.play-pit
   (:require [clojure.string :as cs]))
 
 ;; Given an unsorted integer array, find all pairs with the given sum in it.
@@ -15,7 +15,6 @@
 
 
 
-  (defn pairs-with-sum [coll sum])
   (->> [8 7 2 5 3 1] sort)
 
 

@@ -1,7 +1,9 @@
-(ns groceries-http-service.handler-v0
-  (:require [compojure.core :refer :all]
+(ns groceries-http-service.handler-template
+  (:require [compojure.core :refer [defroutes POST]]
             [compojure.route :as route]
             [clojure.data.json :as json]))
+
+(def app-state (atom {}))
 
 (defn std-resp [{:strs [action parameters]}]
   {:status 200
