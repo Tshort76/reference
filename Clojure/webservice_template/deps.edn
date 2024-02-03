@@ -1,0 +1,14 @@
+{:paths ["src"]
+ :deps
+ {org.clojure/clojure {:mvn/version "1.11.0"}
+  compojure/compojure {:mvn/version "1.6.1"}
+  ring/ring-core {:mvn/version "1.6.3"}
+  ring/ring-jetty-adapter {:mvn/version "1.6.3"}
+  ring/ring-json {:mvn/version "0.5.1"}
+  ring/ring-defaults {:mvn/version "0.3.2"}
+  metosin/ring-http-response {:mvn/version "0.9.3"}}
+ :aliases
+ {:dev
+  {:extra-paths ["dev"]
+   :extra-deps {ring/ring-devel {:mvn/version "1.6.3"}}
+   :main-opts ["-m" "hot-reload"]}}}

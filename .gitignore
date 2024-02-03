@@ -7,3 +7,5 @@ private_reference
 **/*.db
 .lsp
 .clj-kondo
+.calva
+**/.cpcache

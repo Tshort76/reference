@@ -27,6 +27,9 @@
   - [Directory Layout](#directory-layout)
 - [Design Patterns](#design-patterns)
   - [Concurrency](#concurrency)
+    - [Futures](#futures)
+    - [Delays](#delays)
+    - [Promises](#promises)
   - [Atoms](#atoms)
   - [Polymorphism](#polymorphism)
     - [Multimethods](#multimethods)
@@ -403,8 +406,51 @@ test
 ```
 
 # Design Patterns
+When you write serial code, you bind together these three events:
+- Task definition
+- Task execution
+- Blocking for the task’s result
 ## Concurrency
-TODO ... chapter 9 of Brave and True
+### Futures
+Futures are used to **define a task** and place it on another thread without requiring the result immediately.  Requesting a future's result is called dereferencing the future, and you do it with either the `deref` function or the `@` reader macro.  The result of a future is cached, so dereferencing it multiple times does not affect performance.  If you attempt to dereference a future before the task has completed, the thread will block.
+
+```clojure
+
+; return the value 5 if the future doesn’t return within 10 milliseconds
+(deref (future (Thread/sleep 1000) 0) 10 5)
+
+(defn long-process [] (Thread/sleep 5000) 5)
+(let [f (future (long-process))]
+    (while (not (realized? f))  ; use realized? to check if result is ready
+      (println "Sleeping")
+      (Thread/sleep 1000))
+    @f)
+```
+
+### Delays
+Delays allow you to define a task without having to execute it or require the 
+result immediately
+
+### Promises
+Promises allow you to express that you expect a result without having to define the task that should produce it or when that task should run. You create promises using `promise`, deliver/assign an expression to them using `deliver`, and then access the value by deferencing.  This can be used to implement a paradigm similar to passing an empty pointer (to pre-allocated space) as a function parameter and expecting the function to produce the side-effect of updating the data at the pointer's referenced address.
+
+```clojure
+(def my-promise (promise))
+(deliver my-promise (+ 3 5))
+@my-promise ; -> 8
+
+; run tasks in parallel, require 1 second of human time (assuming > 3 cores)
+(let [my-promise (promise)
+        mock-api-call (fn [x] (Thread/sleep 1000) x)]
+    (doseq [score [15 10 25]]
+      (future (when (> (mock-api-call score) 20)
+                (deliver my-promise score))))
+    (println "Ladies and Gentlemen, may I have your attention!")
+    (println "The winner is:" (deref my-promise 5000 "timed out"))) ;handle case where no value is found
+```
+
+
+
 ## Atoms
 ## Polymorphism
 ### Multimethods

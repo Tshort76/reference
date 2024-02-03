@@ -6,11 +6,24 @@
 
 (comment
 
-  ;; You are given two integer arrays nums1 and nums2, sorted in ascending order,
-  ;; and two integers m and n, representing the number of elements in nums1 and nums2 respectively.
-  ;; merge two sorted arrays
+  (let [my-promise (promise)
+        mock-api-call (fn [x] (Thread/sleep 1000) x)]
+    (doseq [score [15 10 18]]
+      (future (when (> (mock-api-call score) 20)
+                (deliver my-promise score))))
+    (println "Ladies and Gentlemen, may I have your attention!")
+    (println
+     (if-let [r (deref my-promise 5000 nil)]
+       (str "The winner is " r)
+       "Nevermind, sorry for the interruption")))
 
 
+  (defn long-process [] (Thread/sleep 5000) 5)
+  (let [f (future (long-process))]
+    (while (not (realized? f))
+      (println "Sleeping")
+      (Thread/sleep 1000))
+    @f)
 
 
 
