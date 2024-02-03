@@ -41,7 +41,7 @@
   - [Background and Terms](#background-and-terms)
   - [JSON, XML, CSV](#json-xml-csv)
     - [Binary variants](#binary-variants)
-  - [DataFlow and evolvability](#dataflow-and-evolvability)
+  - [DataFlow and Evolvability](#dataflow-and-evolvability)
     - [DataFlow via Databases](#dataflow-via-databases)
     - [Dataflow via APIs](#dataflow-via-apis)
     - [Message passing dataflow](#message-passing-dataflow)
@@ -76,7 +76,7 @@ How do we make our systems reliable, in spite of unreliable humans? The best sys
 
 - Design systems in a way that minimizes opportunities for error. For example, well-designed abstractions, APIs, and admin interfaces make it easy to do “the right thing” and discourage “the wrong thing.” However, if the interfaces are too restrictive people will work around them, negating their benefit, so this is a tricky balance to get right.
 - Decouple the places where people make the most mistakes from the places where they can cause failures. In particular, provide fully featured non-production sandbox environments where people can explore and experiment safely, using real data, without affecting real users. 
-- Test thoroughly at all levels, from unit tests to whole-system integration tests and manual tests [3]. Automated testing is widely used, well understood, and especially valuable for covering corner cases that rarely arise in normal operation. 
+- Test thoroughly at all levels, from unit tests to whole-system integration tests and manual tests. Automated testing is widely used, well understood, and especially valuable for covering corner cases that rarely arise in normal operation. 
 - Allow quick and easy recovery from human errors, to minimize the impact in the case of a failure. For example, make it fast to roll back configuration changes, roll out new code gradually (so that any unexpected bugs affect only a small subset of users), and provide tools to recompute data (in case it turns out that the old computation was incorrect). 
 - Set up detailed and clear monitoring, such as performance metrics and error rates. In other engineering disciplines this is referred to as telemetry. (Once a rocket has left the ground, telemetry is essential for tracking what is happening, and for understanding failures) Monitoring can show us early warning signals and allow us to check whether any assumptions or constraints are being violated. When a problem occurs, metrics can be invaluable in diagnosing the issue. 
 - Implement good management practices and training … beyond the scope of this document
@@ -127,19 +127,19 @@ Every data model embodies assumptions about how it is going to be used. Some kin
 
 It can take a lot of effort to master just one data model (think how many books there are on relational data modeling). Building software is hard enough, even when working with just one data model and without worrying about its inner workings. But since the data model has such a profound effect on what the software layer above it can and can’t do, it’s important to choose one that is appropriate to the application. Custom data models force application developers to think a lot about the internal representation of the data in the database, which has a negative impact on evolvability, simplicity, and maintainability.
 
-A problem that arises with using a generic persistence data model, such as their relational data model, is that there's often a translation that needs to occur between the application data model and the persisted data model. The difference between the two is calmly known as the impedance mismatch. This often arises because your persistence layer is optimizing for on disk storage and generic queries, while your application layer is optimizing for developer and user convenience at the API level. Document stores, like MongoDB, use JSON, which can lower the impedance mismatch, at the cost of redundant data on disk
+A problem that arises with using a generic persistence data model, such as their relational data model, is that there's often a translation that needs to occur between the application data model and the persisted data model. The difference between the two is known as the *impedance mismatch*. This often arises because your persistence layer is optimizing for on disk storage and generic queries, while your application layer is optimizing for developer and user convenience at the API level. Document stores, like MongoDB, use JSON, which can lower the *impedance mismatch*, at the cost of redundant data on disk.
 
 ## Relational Data models
 ### Heuristics
 #### Use IDs and GUIDs for keys
 The advantage of using an ID is that because it has no meaning to humans, it never needs to change: the ID can remain the same, even if the information it identifies changes.
 
-Anything that is meaningful to humans may need to change sometime in the future—and if that information is duplicated, all the redundant copies need to be updated. That incurs write overheads, and risks inconsistencies (where some copies of the information are updated but others aren’t). Removing such duplication is the key idea behind normalization in databases.
+Anything that is meaningful to humans may need to change sometime in the future and if that information is duplicated, all the redundant copies need to be updated. That incurs write overheads, and risks inconsistencies (where some copies of the information are updated but others aren’t). Removing such duplication is the key idea behind normalization in databases.
 
 ## Document Data Models
 There are several driving forces behind the adoption of NoSQL databases, including:
 - A need for greater scalability than relational databases can easily achieve, including very large datasets or very high write throughput 
-- A widespread preference for free and open source software over commercial database products 
+- A widespread preference for free and open source software over commercial database products
 - Specialized query operations that are not well supported by the relational model 
 - Frustration with the restrictiveness of relational schemas, and a desire for a more dynamic and expressive data model
 ### Strengths
@@ -168,7 +168,7 @@ Each vertex has a unique id, incoming edges, outgoing edges, and attributes (key
 Each edge has a unique ID, start vertex, end vertex, and attributes (key-value pairs)
 
 ### Triple stores
-In a triple-store, all information is stored in the form of very simple three-part statements: (subject, predicate, object). A triple might be (Jim, likes, bananas), (Jim,is,gay), (gay,type_of, sexual_orientation).
+In a triple-store, all information is stored in the form of very simple three-part statements: (subject, predicate, object). A triple might be (Jim, likes, bananas), (Jim,is,silly), (silly,type_of, personality).
 
 ## Summary
 Document databases target use cases where data comes in self-contained documents and relationships between one document and another are rare
@@ -278,10 +278,8 @@ With faster computers and more extensive digital records, databases are increasi
 While relational databases can be used for both OLAP and OLTP, many companies use separate database systems for OLAP, termed **data warehouses**.
 
 ## Data Warehouses
-An enterprise may have dozens of different transaction processing systems: systems
-powering the customer-facing website, controlling point of sale (checkout) systems in
-physical stores, tracking inventory in warehouses, planning routes for vehicles, man‐
-aging suppliers, administering employees, etc. Each of these systems is complex and has its own administrators, who are often not eager to let analysts run arbitrary queries across it during business hours.
+An enterprise may have dozens of different transaction processing systems: - systems powering the customer-facing website and controlling point of sale (checkout)
+systems in physical stores, tracking inventory in warehouses, planning routes for vehicles, managing suppliers, administering employees, etc. Each of these systems is complex and has its own administrators, who are often not eager to let analysts run arbitrary queries across it during business hours.
 
 To support the OLAP paradigm, a read-only copy of the data (the warehouse) is created from all the various OLTP systems in the company.  The warehouse build process is an example of an ETL:
 - (E)xtract the data from OLTP systems, with some combination of periodic data dumps and continuously streamed updates
@@ -325,8 +323,7 @@ The above table is a view of a data cube, where there are 2 dimensions at play a
 On a high level, we saw that storage engines fall into two broad categories: those optimized for transaction processing (OLTP), and those optimized for analytics (OLAP).
 
 There are big differences between the access patterns in those use cases:
-- OLTP systems are typically user-facing, which means that they may see a huge volume of requests. In order to handle the load, applications usually only touch a small number of records in each query. The application requests records using
-some kind of key, and the storage engine uses an index to find the data for the requested key. Disk seek time is often the bottleneck here.
+- OLTP systems are typically user-facing, which means that they may see a huge volume of requests. In order to handle the load, applications usually only touch a small number of records in each query. The application requests records using some kind of key, and the storage engine uses an index to find the data for the requested key. Disk seek time is often the bottleneck here.
 - OLAP systems such as data warehouses are primarily used by business analysts. They handle a much lower volume of queries than OLTP systems, but each query is typically very demanding, requiring many millions of records to be scanned in a short time. Disk bandwidth (not seek time) is often the bottleneck here, and column-oriented storage is an increasingly popular solution for this kind of workload.
 
 On the OLTP side, we saw storage engines from two main schools of thought:
@@ -365,7 +362,7 @@ struct Person {
 
 Note that the encoded data contains field tags (i.e. 1, 2, and 3 above), which are stored in the individual documents/records instead of field names (to reduce size and ease certain update operations).
 
-## DataFlow and evolvability
+## DataFlow and Evolvability
 ### DataFlow via Databases
 - Large variance in record age: could have data that is 5 milliseconds old AND data that is 5 years old
 - Often large lag between consumption (read) and production (write)
@@ -383,7 +380,7 @@ Note that the encoded data contains field tags (i.e. 1, 2, and 3 above), which a
 ### Message passing dataflow
 - Asynchronous
 - It can act as a buffer if the recipient is unavailable or overloaded, and thus improve system reliability.
-- It avoids the sender needing to know the IP address and port number of therecipient
+- It avoids the sender needing to know the IP address and port number of the recipient
 - It allows one message to be sent to several recipients.
 - It logically decouples the sender from the recipient (publish and forget)
 
@@ -474,7 +471,7 @@ If a sequence of writes happens in a certain order, then anyone reading those wr
 
 # Appendix
 ## Bloom Filters
-For set membership testing
+Used mostly for set membership testing, a bloom filter is a large bit-array (size of M), which functions similiarly to a hash table, and a set of K hash functions.  To add an ITEM, the item is hashed with each of the K hash functions and the corresponding indices in the bit-array are flipped to 1.  To check if ITEM is already in our set, we apply the k hash functions and check if all of the addresses are already 1.  Note that we could have false positives if all K hashes yield the same indices for different items, but that the likelihood of this can be reduced by increasing K.  The false positive rate is $(1−(1−1/m)^{nk})^k$
 ## R-trees
 Special index for geospatial queries
 ## Space filling curve

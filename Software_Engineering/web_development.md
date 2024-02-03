@@ -1,3 +1,16 @@
+- [HTTP](#http)
+  - [URI](#uri)
+  - [Methods](#methods)
+  - [Status codes](#status-codes)
+  - [HTTP Request components](#http-request-components)
+  - [HTTP Response components](#http-response-components)
+- [REST](#rest)
+  - [API Best Practices](#api-best-practices)
+  - [Alternatives](#alternatives)
+- [Handles, Routes, and Middleware](#handles-routes-and-middleware)
+  - [Ring](#ring)
+  - [Compojure](#compojure)
+
 ## HTTP
 ### URI
 \<protocol\>://\<service-name\>/\<resource-path\>
@@ -81,18 +94,68 @@ HERE
 https://www.youtube.com/watch?v=U6OAdQqWegQ
 
 
+# Client Server Data Flow
+![web dataflow](resources/images/web_dataflow.jpg)
+
+Interacting directly with HTTP responses/requests is very complicated at a low level, but at a higher level of abstraction it is fairly simple.  We use a Web Server tool (e.g. Tomcat, Flask, Jetty) to handle the hard stuff and provide our application with a simpler interface.
+To simplify either further, so that our application deals with as little boilerplate as possible, we use programming language specific libraries (e.g. Spring, Ring) for handling, routing, and processing requests/responses in language specific data structures.  I will use the Clojure web service stack to demonstrate.
+
+## Handles, Routes, and Middleware
+The [Ring](https://github.com/ring-clojure/ring/wiki/Concepts) library is Clojure's standard framework for defining *handlers* and *middleware* for web services.
+
+### Handlers
+Handlers are functions that define your web application. Synchronous handlers take one argument, a map representing a HTTP *request*, and return a map representing the HTTP *response*.
+
+```clojure
+(defn what-is-my-ip [request]
+  {:status 200
+   :headers {"Content-Type" "text/plain"}
+   :body (:remote-addr request)})
+```
+
+#### Requests
+While middleware can and often does add custom, application specific keys, each Ring request will also have the following set of standard keys:
+```clojure
+:server-port The port on which the request is being handled.
+:server-name The resolved server name, or the server IP address.
+:remote-addr The IP address of the client or the last proxy
+:uri The request URI (the full path after the domain name).
+:query-string The query string, if present.
+:scheme The transport protocol, either :http or :https.
+:request-method The HTTP request method, which is one of :get, :head, :options, :put, :post, or :delete.
+:headers hashmap (lowercase header name) of headers metadata.
+:body An InputStream for the request body, if present.
+```
+#### Responses
+```clojure
+:status The HTTP status code, such as 200, 302, 404 etc.
+:headers hashmap of header metadata
+:body  A string, Iseq, File, InputStream
+```
+
+### Middleware
+Middleware are higher-level functions that add additional functionality to handlers. The first argument of a middleware function should be a *handler*, and its return value should be a new *handler function* that will call the original *handler*.
+
+Here is a simple example that adds a content-type attribute to a *response*.
+
+```clojure
+(defn wrap-content-type [handler content-type]
+  (fn [request]
+    (let [response (handler request)]
+      (assoc-in response [:headers "Content-Type"] content-type))))
 
 
-## Middleware
-Middleware can be used as an adaptor that fits between the browser and your application, converting HTTP requests from the browser into language specific data structures and converting language specific data structures into HTTP responses.
-![Middleware](resources/images/web_middleware.png)
-
-I will use the Clojure web service stack to demonstrate.
+(def app
+  (-> handler
+      (wrap-content-type "text/html")
+      (wrap-keyword-params)
+      (wrap-params)))
+```
 
 ### Compojure
 [Compojure Wiki](https://github.com/weavejester/compojure/wiki)
 
-Lightweight package for defining routes, leveraging the Ring library.
+Lightweight package for defining routes, using Ring handlers as the data structure.
 ```clojure
 (def my-routes
   (routes
@@ -105,6 +168,3 @@ Lightweight package for defining routes, leveraging the Ring library.
     (GET "/profile" [] ...)
     (GET "/posts" [] ...)))
 ```
-### Ring
-[Concepts Wiki](https://github.com/ring-clojure/ring/wiki/Concepts)
-
