@@ -1,7 +1,25 @@
-<div align="center">**Markdown**</div>
-===
+- [Markdown](#markdown)
+  - [Text Styling](#text-styling)
+    - [Color](#color)
+  - [New lines](#new-lines)
+  - [Use three hyphens for a heading like appearance](#use-three-hyphens-for-a-heading-like-appearance)
+  - [Block Quotes](#block-quotes)
+    - [Nest those quotes](#nest-those-quotes)
+  - [Code](#code)
+  - [Lists](#lists)
+    - [Dictionary list with HTML](#dictionary-list-with-html)
+  - [Tex (math) markdown](#tex-math-markdown)
+  - [Tables](#tables)
+  - [Graphics](#graphics)
+    - [Simple inline](#simple-inline)
+    - [Customize inline image](#customize-inline-image)
+  - [Hyper links](#hyper-links)
+    - [Internal links](#internal-links)
+    - [External links](#external-links)
+- [References](#references)
 
-## <a name="styling-sec"></a> Text Styling
+# Markdown
+## Text Styling
 
 **Sometimes it is best to be BOLD.**
 
@@ -105,12 +123,12 @@ $P(X=x) = \left.
 
 
 ## Tables
-| Type | Notes |
-|---|---|
-|df[val] | Select single column or sequence of columns; val can be boolean array, slice operator, bit mask DataFrame |
-|df.loc[val] | select row or subset of row by _label_|
-|df.loc[val1,val2] | select both rows and columns by _label_|
-| df.iloc[idx] | select row or subset of rows based on integer position |
+| Type              | Notes                                                                                                     |
+| ----------------- | --------------------------------------------------------------------------------------------------------- |
+| df[val]           | Select single column or sequence of columns; val can be boolean array, slice operator, bit mask DataFrame |
+| df.loc[val]       | select row or subset of row by _label_                                                                    |
+| df.loc[val1,val2] | select both rows and columns by _label_                                                                   |
+| df.iloc[idx]      | select row or subset of rows based on integer position                                                    |
 
 
 ## Graphics
